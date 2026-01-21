@@ -8,9 +8,8 @@ from app.agent.prompt import SYSTEM_PROMPT
 from app.mcp.client import MCPClient
 
 
-# -------------------------------------------------
-# 🛡 GUARDRAIL HELPERS
-# -------------------------------------------------
+# GUARDRAIL HELPERS
+
 def is_greeting(text: str) -> bool:
     greetings = ["hi", "hello", "hey", "good morning", "good evening"]
     return text.lower().strip() in greetings
@@ -49,9 +48,9 @@ def retry_with_stronger_prompt(messages):
     return messages
 
 
-# -------------------------------------------------
+
 # AGENT RUNNER
-# -------------------------------------------------
+
 def main():
     mcp_client = MCPClient()
 
@@ -73,7 +72,7 @@ def main():
             messages = result["messages"]
             response_text = messages[-1].content
 
-            # 🛡 Guardrail (ONLY if meaningful question)
+            #Guardrail (ONLY if meaningful question)
             if (
                 not is_greeting(user_input)
                 and is_weak_response(response_text)
@@ -83,9 +82,9 @@ def main():
                 messages = result["messages"]
                 response_text = messages[-1].content
 
-            # -------------------------------------------------
+            
             # STREAM RESPONSE
-            # -------------------------------------------------
+            
             CHUNK_SIZE = 20
 
             for i in range(0, len(response_text), CHUNK_SIZE):
