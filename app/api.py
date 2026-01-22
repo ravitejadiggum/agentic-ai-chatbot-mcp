@@ -12,17 +12,17 @@ import sys
 import json
 import threading
 
-# -------------------------------------------------
+
 # FastAPI app
-# -------------------------------------------------
+
 app = FastAPI(
     title="Agentic AI Chatbot (Streaming)",
     version="1.0.0"
 )
 
-# -------------------------------------------------
+
 # Serve static UI
-# -------------------------------------------------
+
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
@@ -31,9 +31,9 @@ def serve_ui():
     return FileResponse("static/index.html")
 
 
-# -------------------------------------------------
+
 # Agent runner process
-# -------------------------------------------------
+
 agent_process = None
 lock = threading.Lock()
 
@@ -53,9 +53,9 @@ def start_agent():
 start_agent()
 
 
-# -------------------------------------------------
+
 # Streaming chat endpoint (GET – SSE)
-# -------------------------------------------------
+
 @app.get("/chat-stream")
 def chat_stream(message: str):
 
@@ -92,9 +92,9 @@ def chat_stream(message: str):
     )
 
 
-# -------------------------------------------------
+
 # Health check
-# -------------------------------------------------
+
 @app.get("/health")
 def health():
     return {"status": "running"}
