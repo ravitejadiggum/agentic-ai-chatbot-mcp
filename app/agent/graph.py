@@ -9,18 +9,18 @@ from pydantic import BaseModel
 from app.agent.prompt import SYSTEM_PROMPT
 
 
-# -------------------------------------------------------------------
+
 # LLM
-# -------------------------------------------------------------------
+
 llm = ChatGroq(
     model="llama-3.1-8b-instant",
     temperature=0
 )
 
 
-# -------------------------------------------------------------------
+
 # TOOL INPUT SCHEMAS (ONLY SCHEMAS, NO EXECUTION)
-# -------------------------------------------------------------------
+
 class WeatherInput(BaseModel):
     city: str
 
@@ -29,9 +29,9 @@ class CalculatorInput(BaseModel):
     expression: str
 
 
-# -------------------------------------------------------------------
+
 # TOOL DEFINITIONS (SCHEMA ONLY – MCP EXECUTES THEM)
-# -------------------------------------------------------------------
+
 weather_tool = StructuredTool(
     name="weather",
     description="Get current weather conditions of a city like Bangalore, Delhi, London",
@@ -52,24 +52,23 @@ tools = [weather_tool, calculator_tool]
 llm_with_tools = llm.bind_tools(tools)
 
 
-# -------------------------------------------------------------------
 # STATE
-# -------------------------------------------------------------------
+
 class AgentState(TypedDict):
     messages: List[BaseMessage]
 
 
-# -------------------------------------------------------------------
+
 # AGENT NODE (DECIDES: TOOL OR DIRECT ANSWER)
-# -------------------------------------------------------------------
+
 def agent_node(state: AgentState):
     response = llm_with_tools.invoke(state["messages"])
     return {"messages": state["messages"] + [response]}
 
 
-# -------------------------------------------------------------------
+
 # TOOL NODE (PLACEHOLDER – REAL EXECUTION HAPPENS IN agent_runner.py)
-# -------------------------------------------------------------------
+
 def tool_node(state: AgentState):
     """
     This node exists ONLY to satisfy LangGraph flow.
@@ -89,17 +88,17 @@ def tool_node(state: AgentState):
     return {"messages": state["messages"] + tool_messages}
 
 
-# -------------------------------------------------------------------
+
 # ROUTER
-# -------------------------------------------------------------------
+
 def should_use_tool(state: AgentState):
     last = state["messages"][-1]
     return "tool" if getattr(last, "tool_calls", None) else END
 
 
-# -------------------------------------------------------------------
+
 # GRAPH
-# -------------------------------------------------------------------
+
 graph = StateGraph(AgentState)
 
 graph.add_node("agent", agent_node)
