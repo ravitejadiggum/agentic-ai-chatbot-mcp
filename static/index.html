@@ -134,7 +134,10 @@
     );
 
     eventSource.onmessage = function (event) {
-      // ✅ Preserve spaces & formatting
+      // BACKEND SENDS RAW TEXT CHUNKS
+      if (event.data === "") return;
+
+      // Append chunk
       botDiv.textContent += event.data;
       chatBox.scrollTop = chatBox.scrollHeight;
     };
@@ -142,6 +145,11 @@
     eventSource.onerror = function () {
       eventSource.close();
     };
+
+    // CLOSE STREAM WHEN BACKEND SENDS end:true
+    eventSource.addEventListener("end", () => {
+      eventSource.close();
+    });
   }
 </script>
 
